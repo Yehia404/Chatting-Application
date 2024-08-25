@@ -26,10 +26,15 @@ const Login = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
   useEffect(() => {
-    const emailIsValid = !emailError;
-    const passwordIsValid = !passwordError;
-    setIsButtonDisabled(!emailIsValid || !passwordIsValid);
-  }, [emailError, passwordError]);
+    const emailIsEmpty = email.trim() === "";
+    const passwordIsEmpty = password.trim() === "";
+    const emailIsValid = !emailError && !emailIsEmpty;
+    const passwordIsValid = !passwordError && !passwordIsEmpty;
+
+    setIsButtonDisabled(
+      emailIsEmpty || passwordIsEmpty || !emailIsValid || !passwordIsValid
+    );
+  }, [email, password, emailError, passwordError]);
 
   return (
     <div className="login-container flex flex-col md:flex-row h-full min-h-screen">
