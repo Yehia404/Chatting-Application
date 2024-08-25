@@ -12,10 +12,6 @@ const UserDropdown = () => {
           <IoMdLogOut className="mr-2" />
           Logout
         </Link>
-        {/* <a href=" ">
-          <IoMdLogOut className="mr-2" />
-          Logout
-        </a> */}
       </Menu.Item>
     </Menu>
   );
