@@ -1,53 +1,35 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import pic from "../assets/Pic.jpg";
 import Password from "../components/Password";
 import { Link } from "react-router-dom";
 import Input from "../components/InputField";
 import CheckBox from "../components/CheckBox";
 import Button from "../components/Button";
+import { useEmailValidation } from "../hooks/EmailVal";
+import { usePasswordValidation } from "../hooks/PassVal";
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const {
+    email,
+    emailError,
+    emailTouched,
+    handleEmailChange,
+    handleEmailBlur,
+  } = useEmailValidation("");
+  const {
+    password,
+    passwordError,
+    passwordTouched,
+    handlePasswordChange,
+    handlePasswordBlur,
+  } = usePasswordValidation("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
 
-  const [emailTouched, setEmailTouched] = useState(false);
-  const [passwordTouched, setPasswordTouched] = useState(false);
-
-  const [emailError, setEmailError] = useState("");
-  const [passwordError, setPasswordError] = useState("");
-
   useEffect(() => {
-    const emailIsValid = /\S+@\S+\.\S+/.test(email);
-    const passwordIsValid = password.length >= 8;
-
+    const emailIsValid = !emailError;
+    const passwordIsValid = !passwordError;
     setIsButtonDisabled(!emailIsValid || !passwordIsValid);
-
-    setEmailError(
-      email.length > 0 && !emailIsValid ? "Please enter a valid email." : ""
-    );
-    setPasswordError(
-      password.length > 0 && !passwordIsValid
-        ? "Password must be at least 8 characters."
-        : ""
-    );
-  }, [email, password]);
-
-  const handleEmailChange = (e) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
-  };
-
-  const handleEmailBlur = () => {
-    setEmailTouched(true);
-  };
-
-  const handlePasswordBlur = () => {
-    setPasswordTouched(true);
-  };
+  }, [emailError, passwordError]);
 
   return (
     <div className="login-container flex flex-col md:flex-row h-full min-h-screen">
@@ -66,27 +48,29 @@ const Login = () => {
           </div>
           <form>
             <div className="text-left flex flex-col gap-y-5">
-              <Input
-                name="Email"
-                id="email"
-                value={email}
-                type="email"
-                onChange={handleEmailChange}
-                onBlur={handleEmailBlur}
-              />
-              {emailTouched && emailError && (
-                <p className="text-red-500 text-sm">{emailError}</p>
-              )}
-
-              <Password
-                value={password}
-                onChange={handlePasswordChange}
-                onBlur={handlePasswordBlur}
-              />
-              {passwordTouched && passwordError && (
-                <p className="text-red-500 text-sm">{passwordError}</p>
-              )}
-
+              <div className="relative">
+                <Input
+                  name="Email"
+                  id="email"
+                  value={email}
+                  type="email"
+                  onChange={handleEmailChange}
+                  onBlur={handleEmailBlur}
+                />
+                {emailTouched && emailError && (
+                  <p className="text-red-500 text-sm mt-1">{emailError}</p>
+                )}
+              </div>
+              <div className="relative">
+                <Password
+                  value={password}
+                  onChange={handlePasswordChange}
+                  onBlur={handlePasswordBlur}
+                />
+                {passwordTouched && passwordError && (
+                  <p className="text-red-500 text-sm mt-1">{passwordError}</p>
+                )}
+              </div>
               <CheckBox id="remember" label="Remember me" />
               <div className="w-full flex justify-center">
                 <Button label="Login" disabled={isButtonDisabled} />
