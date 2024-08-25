@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { IoMdEye, IoMdEyeOff } from "react-icons/io";
 
-const Password = () => {
+const Password = (props) => {
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -16,6 +16,9 @@ const Password = () => {
       <input
         type={passwordVisible ? "text" : "password"}
         id="password"
+        value={props.value}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
         className="bg-gray-50 border border-gray-300 focus:ring-blue-500 focus:border-blue-500 block w-full p-1 pr-10"
         required
       />

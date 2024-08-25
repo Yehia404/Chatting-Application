@@ -4,7 +4,12 @@ const Button = (props) => {
   return (
     <button
       type="submit"
-      className="bg-cyan-500 border-md border-gray-600 text-white rounded px-40 py-1.5 hover:bg-cyan-600 hover:text-white w-full"
+      disabled={props.disabled}
+      className={`${
+        props.disabled
+          ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+          : "bg-cyan-500 text-white hover:bg-cyan-600"
+      } border-md border-gray-600 rounded px-40 py-1.5 w-full`}
     >
       {props.label}
     </button>

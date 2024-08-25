@@ -8,7 +8,10 @@ const Input = (props) => {
       </label>
       <input
         id={`${props.id}`}
+        value={props.value}
         type={props.type}
+        onChange={props.onChange}
+        onBlur={props.onBlur}
         className="bg-gray-50 border border-gray-15 focus:ring-blue-500 focus:border-blue-500 block w-full p-1"
         required
       />

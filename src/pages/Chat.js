@@ -11,13 +11,13 @@ const users = [
     id: 1,
     name: "Ahmed Amr",
     online: true,
-    connectivity: "Online 10 minutes ago",
+    connectivity: "Online",
   },
   {
     id: 2,
     name: "Yehia Sakr",
     online: true,
-    connectivity: " Online 5 hours ago",
+    connectivity: "Online",
   },
   {
     id: 3,
@@ -117,9 +117,6 @@ const Chat = () => {
           {selectedUser ? (
             <>
               <div className="flex flex-row items-center p-4 gap-x-2 border-b border-gray-200 bg-gray-100">
-                {/* <div>
-                  <CgProfile className="w-10 h-10 mr-2" />
-                </div> */}
                 <div className="relative inline-block">
                   <CgProfile className="w-10 h-10" />
                   {selectedUser.online && (
