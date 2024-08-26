@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CgProfile } from "react-icons/cg";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
-import { IoIosSearch, IoMdSend } from "react-icons/io";
+import { IoIosSearch, IoMdSend, IoIosArrowDown } from "react-icons/io";
 import UserDropdown from "../components/UserDropdown";
 import delivered from "../assets/delivered.png";
 import seen from "../assets/seen.png";
@@ -45,6 +45,7 @@ const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  const messagesEndRef = useRef(null);
 
   const { loggedInUser } = useUserContext();
 
@@ -74,6 +75,12 @@ const Chat = () => {
   };
 
   const selectedUser = users.find((user) => user.id === selectedUserId);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
 
   return (
     <div className="flex flex-col h-screen">
@@ -182,7 +189,13 @@ const Chat = () => {
                     <p className="text-2xl">You haven't started chatting yet</p>
                   </div>
                 )}
+                <div ref={messagesEndRef} />
               </div>
+
+              <button className="fixed bottom-20 right-3 bg-white text-cyan-500 rounded-full p-2 shadow-lg">
+                <IoIosArrowDown className="w-6 h-6" />
+              </button>
+
               <div className="absolute bottom-0 left-0 w-full p-4 bg-white flex items-center gap-x-3 border-t border-gray-200">
                 <input
                   type="text"
