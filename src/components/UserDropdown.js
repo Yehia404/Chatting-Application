@@ -4,7 +4,7 @@ import { CgProfile } from "react-icons/cg";
 import { IoMdLogOut, IoMdArrowDropdown } from "react-icons/io";
 import { Link } from "react-router-dom";
 
-const UserDropdown = () => {
+const UserDropdown = (props) => {
   const menu = (
     <Menu>
       <Menu.Item key="1">
@@ -20,7 +20,7 @@ const UserDropdown = () => {
     <Dropdown overlay={menu} trigger={["hover"]}>
       <div className="flex items-center cursor-pointer">
         <CgProfile className="w-7 h-7" />
-        <span className="p-1 text-lg">Ahmed Amr</span>
+        <span className="p-1 text-lg">{props.username}</span>
         <IoMdArrowDropdown />
       </div>
     </Dropdown>
