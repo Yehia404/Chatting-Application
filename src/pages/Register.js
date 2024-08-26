@@ -131,6 +131,7 @@ const Register = () => {
                 <div className="relative w-full">
                   <Input
                     name="First Name"
+                    id="firstname"
                     value={firstname}
                     onChange={handleFirstNameChange}
                     onBlur={handleFirstNameBlur}
@@ -144,6 +145,7 @@ const Register = () => {
                 <div className="relative w-full">
                   <Input
                     name="Last Name"
+                    id="lastname"
                     value={lastname}
                     onChange={handleLastNameChange}
                     onBlur={handleLastNameBlur}

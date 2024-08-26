@@ -192,9 +192,9 @@ const Chat = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              <button className="fixed bottom-20 right-3 bg-white text-cyan-500 rounded-full p-2 shadow-lg">
+              {/* <button className="fixed bottom-20 right-3 bg-white bg-opacity-70 text-cyan-500 rounded-full p-2 shadow-lg">
                 <IoIosArrowDown className="w-6 h-6" />
-              </button>
+              </button> */}
 
               <div className="absolute bottom-0 left-0 w-full p-4 bg-white flex items-center gap-x-3 border-t border-gray-200">
                 <input
