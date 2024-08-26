@@ -7,6 +7,8 @@ import Button from "../components/Button";
 import { useNameValidation } from "../hooks/NameVal";
 import { useEmailValidation } from "../hooks/EmailVal";
 import { usePasswordValidation } from "../hooks/PassVal";
+import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../contexts/UserContext";
 
 const Register = () => {
   const {
@@ -89,6 +91,24 @@ const Register = () => {
     passwordError,
   ]);
 
+  const { addUser } = useUserContext();
+  const navigate = useNavigate();
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+
+    const newUser = {
+      firstname,
+      lastname,
+      email,
+      username,
+      password,
+    };
+
+    addUser(newUser);
+    navigate("/login");
+  };
+
   return (
     <div className="login-container flex flex-col md:flex-row h-full min-h-screen">
       <div className="login-image w-full md:w-1/2 h-64 md:h-auto">
@@ -102,7 +122,10 @@ const Register = () => {
               Sign up now to claim your free space.
             </p>
           </div>
-          <form className="flex flex-col items-center w-full">
+          <form
+            className="flex flex-col items-center w-full"
+            onSubmit={handleRegister}
+          >
             <div className="text-left flex flex-col gap-y-5 w-full">
               <div className="flex flex-col md:flex-row justify-between gap-5">
                 <div className="relative w-full">

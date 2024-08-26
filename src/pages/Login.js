@@ -8,11 +8,7 @@ import CheckBox from "../components/CheckBox";
 import Button from "../components/Button";
 import { useEmailValidation } from "../hooks/EmailVal";
 import { usePasswordValidation } from "../hooks/PassVal";
-
-const users = [
-  { email: "y@gmail.com", password: "12345678", username: "Yehia Sakr" },
-  { email: "a@gmail.com", password: "12345678", username: "Ahmed Amr" },
-];
+import { useUserContext } from "../contexts/UserContext";
 
 const Login = () => {
   const {
@@ -31,6 +27,7 @@ const Login = () => {
   } = usePasswordValidation("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const navigate = useNavigate();
+  const { loginUser } = useUserContext();
 
   useEffect(() => {
     const emailIsEmpty = email.trim() === "";
@@ -45,11 +42,9 @@ const Login = () => {
 
   const handleLogin = (e) => {
     e.preventDefault();
-    const foundUser = users.find(
-      (user) => user.email === email && user.password === password
-    );
-    if (foundUser) {
-      navigate("/chat", { state: { username: foundUser.username } });
+    const user = loginUser(email, password);
+    if (user) {
+      navigate("/chat");
     } else {
       alert("Invalid credentials");
     }

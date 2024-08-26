@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
 import { CgProfile } from "react-icons/cg";
 import { IoChatboxEllipsesOutline } from "react-icons/io5";
 import { IoIosSearch, IoMdSend } from "react-icons/io";
 import UserDropdown from "../components/UserDropdown";
 import delivered from "../assets/delivered.png";
 import seen from "../assets/seen.png";
+import { useUserContext } from "../contexts/UserContext";
 
 const users = [
   {
@@ -42,12 +42,11 @@ const dummyMessages = {
 };
 
 const Chat = () => {
-  const location = useLocation();
-  const username = location.state?.username || "Guest";
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [messages, setMessages] = useState([]);
-
   const [message, setMessage] = useState("");
+
+  const { loggedInUser } = useUserContext();
 
   const handleUserClick = (userId) => {
     setSelectedUserId(userId);
@@ -80,7 +79,7 @@ const Chat = () => {
     <div className="flex flex-col h-screen">
       {/* NavBar */}
       <div className="flex justify-end p-4 border-b border-gray-200">
-        <UserDropdown username={username} />
+        <UserDropdown username={loggedInUser.username} />
       </div>
 
       <div className="flex flex-grow overflow-hidden">

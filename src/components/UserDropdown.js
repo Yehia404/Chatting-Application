@@ -2,16 +2,26 @@ import React from "react";
 import { Dropdown, Menu } from "antd";
 import { CgProfile } from "react-icons/cg";
 import { IoMdLogOut, IoMdArrowDropdown } from "react-icons/io";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../contexts/UserContext";
 
 const UserDropdown = (props) => {
+  const { logoutUser } = useUserContext();
+  const navigate = useNavigate();
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    logoutUser();
+    navigate("/login");
+  };
+
   const menu = (
     <Menu>
       <Menu.Item key="1">
-        <Link to="/login">
+        <button onClick={handleLogout} className=" text-red-500">
           <IoMdLogOut className="mr-2" />
           Logout
-        </Link>
+        </button>
       </Menu.Item>
     </Menu>
   );

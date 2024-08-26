@@ -8,17 +8,20 @@ import {
   Navigate,
 } from "react-router-dom";
 import Chat from "./pages/Chat";
+import { UserProvider } from "./contexts/UserContext";
 
 const App = () => {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Navigate to="/chat" />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/chat" element={<Chat />} />
-      </Routes>
-    </Router>
+    <UserProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/chat" />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/chat" element={<Chat />} />
+        </Routes>
+      </Router>
+    </UserProvider>
   );
 };
 
