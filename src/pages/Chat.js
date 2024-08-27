@@ -46,6 +46,7 @@ const Chat = () => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
@@ -100,6 +101,10 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
+  const filteredUsers = users.filter((user) =>
+    user.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const selectedUser = users.find((user) => user.id === selectedUserId);
 
   return (
@@ -118,10 +123,12 @@ const Chat = () => {
               type="text"
               placeholder="Search"
               className="w-full p-2 pl-10 border rounded-md border-gray-300"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <ul className="space-y-4">
-            {users.map((user) => (
+            {filteredUsers.map((user) => (
               <li
                 key={user.id}
                 className={`flex items-center gap-x-2 ${
@@ -240,16 +247,17 @@ const Chat = () => {
                   className="w-full p-2 border rounded-full border-gray-300"
                 />
                 <div
-                  className="flex items-center justify-center bg-cyan-500 rounded-full w-10 h-10 text-white cursor-pointer"
+                  className="flex items-center justify-center bg-cyan-500 rounded-full w-10 h-10 cursor-pointer"
                   onClick={handleSendMessage}
                 >
-                  <IoMdSend className="w-5 h-5" />
+                  <IoMdSend className="w-6 h-6 text-white" />
                 </div>
               </div>
             </>
           ) : (
-            <div className="flex items-center justify-center h-full text-center text-gray-500">
-              <p className="text-2xl">Select a chat to start messaging</p>
+            <div className="flex flex-col flex-grow items-center justify-center text-center text-gray-500">
+              <IoChatboxEllipsesOutline className="w-40 h-40" />
+              <p className="text-2xl">No Chats here yet...</p>
             </div>
           )}
         </div>
