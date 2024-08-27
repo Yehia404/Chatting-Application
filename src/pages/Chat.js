@@ -31,7 +31,7 @@ const users = [
 const dummyMessages = {
   1: [
     { sender: "Ahmed", text: "Hi there!", time: "12:00 PM" },
-    { sender: "Ahmed", text: "Did you hear what happened!", time: "12:00 PM" },
+    { sender: "Ahmed", text: "Did you hear what happened?", time: "12:00 PM" },
     { sender: "Me", text: "Hello Ahmed!", time: "12:01 PM", seen: true },
   ],
   2: [
@@ -45,13 +45,16 @@ const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
+  const [showScrollButton, setShowScrollButton] = useState(false);
   const messagesEndRef = useRef(null);
+  const messagesContainerRef = useRef(null);
 
   const { loggedInUser } = useUserContext();
 
   const handleUserClick = (userId) => {
     setSelectedUserId(userId);
     setMessages(dummyMessages[userId] || []);
+    setShowScrollButton(false);
   };
 
   const handleSendMessage = () => {
@@ -74,13 +77,30 @@ const Chat = () => {
     ];
   };
 
-  const selectedUser = users.find((user) => user.id === selectedUserId);
+  const handleScroll = () => {
+    if (!messagesContainerRef.current) return;
 
-  useEffect(() => {
+    const { scrollTop, scrollHeight, clientHeight } =
+      messagesContainerRef.current;
+
+    if (scrollHeight - scrollTop > clientHeight + 100) {
+      setShowScrollButton(true);
+    } else {
+      setShowScrollButton(false);
+    }
+  };
+
+  const scrollToBottom = () => {
     if (messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
+  };
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
+
+  const selectedUser = users.find((user) => user.id === selectedUserId);
 
   return (
     <div className="flex flex-col h-screen">
@@ -141,7 +161,11 @@ const Chat = () => {
                   </p>
                 </div>
               </div>
-              <div className="flex-grow p-4 overflow-y-auto pb-20">
+              <div
+                className="flex-grow p-4 overflow-y-auto pb-20"
+                ref={messagesContainerRef}
+                onScroll={handleScroll}
+              >
                 {messages.length > 0 ? (
                   messages.map((msg, index) => (
                     <div
@@ -192,9 +216,14 @@ const Chat = () => {
                 <div ref={messagesEndRef} />
               </div>
 
-              {/* <button className="fixed bottom-20 right-3 bg-white bg-opacity-70 text-cyan-500 rounded-full p-2 shadow-lg">
-                <IoIosArrowDown className="w-6 h-6" />
-              </button> */}
+              {showScrollButton && (
+                <button
+                  className="fixed bottom-20 right-3 bg-white bg-opacity-70 text-cyan-500 rounded-full p-2 shadow-lg"
+                  onClick={scrollToBottom}
+                >
+                  <IoIosArrowDown className="w-6 h-6" />
+                </button>
+              )}
 
               <div className="absolute bottom-0 left-0 w-full p-4 bg-white flex items-center gap-x-3 border-t border-gray-200">
                 <input
@@ -211,17 +240,16 @@ const Chat = () => {
                   className="w-full p-2 border rounded-full border-gray-300"
                 />
                 <div
-                  className="flex items-center justify-center bg-cyan-500 rounded-full w-10 h-10 cursor-pointer"
+                  className="flex items-center justify-center bg-cyan-500 rounded-full w-10 h-10 text-white cursor-pointer"
                   onClick={handleSendMessage}
                 >
-                  <IoMdSend className="w-6 h-6 text-white" />
+                  <IoMdSend className="w-5 h-5" />
                 </div>
               </div>
             </>
           ) : (
-            <div className="flex flex-col flex-grow items-center justify-center text-center text-gray-500">
-              <IoChatboxEllipsesOutline className="w-40 h-40" />
-              <p className="text-2xl">No Chats here yet...</p>
+            <div className="flex items-center justify-center h-full text-center text-gray-500">
+              <p className="text-2xl">Select a chat to start messaging</p>
             </div>
           )}
         </div>
