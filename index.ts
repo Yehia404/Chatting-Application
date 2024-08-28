@@ -1,13 +1,13 @@
 import express from 'express';
 import mongoose from 'mongoose';
-
+import userRoutes from './src/routes/userRoutes';
 const app = express();
 
 // Middleware
 app.use(express.json()); // For parsing application/json
 
 // MongoDB connection
-const mongoURI = 'mongodb://localhost:27017/Jatdev'; // Update this URI as needed
+const mongoURI = 'mongodb://localhost:27017/Jatdev';
 mongoose.connect(mongoURI, {
 }).then(() => {
     console.log('MongoDB connected');
@@ -15,7 +15,10 @@ mongoose.connect(mongoURI, {
     console.error('MongoDB connection error:', err);
 });
 
-// Sample route
+app.use('/api/users', userRoutes);
+
+
+
 app.get('/', (req, res) => {
     res.send('Hello World');
 });
