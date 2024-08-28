@@ -9,6 +9,7 @@ import Button from "../components/Button";
 import { useEmailValidation } from "../hooks/EmailVal";
 import { usePasswordValidation } from "../hooks/PassVal";
 import { useUserContext } from "../contexts/UserContext";
+import axios from "axios";
 
 const Login = () => {
   const {
@@ -27,7 +28,7 @@ const Login = () => {
   } = usePasswordValidation("");
   const [isButtonDisabled, setIsButtonDisabled] = useState(true);
   const navigate = useNavigate();
-  const { loginUser } = useUserContext();
+  const { loginUser, setLoggedInUser } = useUserContext();
 
   useEffect(() => {
     const emailIsEmpty = email.trim() === "";
@@ -40,7 +41,7 @@ const Login = () => {
     );
   }, [email, password, emailError, passwordError]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     const user = loginUser(email, password);
     if (user) {
@@ -48,6 +49,22 @@ const Login = () => {
     } else {
       alert("Invalid credentials");
     }
+    // try {
+    //   const response = await axios.post(
+    //     "https://4f14e656-473b-4d55-9840-c67ea035eb72.mock.pstmn.io/login",
+    //     {
+    //       email,
+    //       password,
+    //     }
+    //   );
+    //   const user = response.data.user;
+    //   setLoggedInUser(user);
+
+    //   window.location.href = "/chat";
+    //   // navigate("/chat");
+    // } catch (err) {
+    //   alert("Invalid credentials. Please try again.");
+    // }
   };
 
   return (
