@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import userRoutes from './src/routes/userRoutes';
+import chatRoutes from './src/routes/chatRoutes';
 const app = express();
 
 // Middleware
@@ -16,6 +17,7 @@ mongoose.connect(mongoURI, {
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/chats', chatRoutes);
 
 
 
