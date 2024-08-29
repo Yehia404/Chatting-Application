@@ -2,10 +2,31 @@ import { Request, Response } from 'express';
 import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
-
+import validator from 'validator';
 export const registerUser = async (req: Request, res: Response) => {
     try {
         const { firstname, lastname, username, email, password } = req.body;
+
+        if (typeof firstname !== 'string' || validator.isEmpty(firstname) || !validator.isAlpha(firstname) || firstname.length < 2) {
+            return res.status(400).json({ message: 'Invalid firstname' });
+        }
+
+        if (typeof lastname !== 'string' || validator.isEmpty(lastname) || !validator.isAlpha(lastname) || lastname.length < 2) {
+            return res.status(400).json({ message: 'Invalid lastname' });
+        }
+
+        if (typeof username !== 'string' || validator.isEmpty(username) || !validator.isAlphanumeric(username) || username.length < 2) {
+            return res.status(400).json({ message: 'Invalid username' });
+        }
+
+        if (typeof email !== 'string' || validator.isEmpty(email) || !validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email' });
+        }
+
+        if (typeof password !== 'string' || validator.isEmpty(password) || !validator.isStrongPassword(password, { minLength: 8, minLowercase: 0, minUppercase: 0, minNumbers: 0, minSymbols: 0})) {
+            return res.status(400).json({ message: 'Invalid password' });
+        }
+
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -26,6 +47,14 @@ export const registerUser = async (req: Request, res: Response) => {
 export const loginUser = async (req: Request, res: Response) => {
     try {
         const { email, password } = req.body;
+
+        if (typeof email !== 'string' || validator.isEmpty(email) || !validator.isEmail(email)) {
+            return res.status(400).json({ message: 'Invalid email' });
+        }
+
+        if (typeof password !== 'string' || validator.isEmpty(password) || !validator.isStrongPassword(password, { minLength: 8, minLowercase: 0, minUppercase: 0, minNumbers: 0, minSymbols: 0})) {
+            return res.status(400).json({ message: 'Invalid password' });
+        }
 
         const user = await User.findOne({ email });
         if (!user) {
