@@ -59,7 +59,6 @@ export const searchUsers = async (req: Request, res: Response) => {
 
         res.status(200).json({ users });
     } catch (error) {
-        console.error('Error searching users:', error); // Log error details
         res.status(500).json({ message: 'Error searching users', error });
     }
 };
