@@ -3,6 +3,9 @@ import User from '../models/User';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import validator from 'validator';
+
+const jwtSecret = process.env.JWT_SECRET! || 'default_secret';
+
 export const registerUser = async (req: Request, res: Response) => {
     try {
         const { firstname, lastname, username, email, password } = req.body;
@@ -66,9 +69,9 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
-        // const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET!, { expiresIn: '1h' });
+        const token = jwt.sign({ userId: user._id }, jwtSecret, { expiresIn: '1h' });
 
-        res.status(200).json({ message: 'User logged in successfully'});
+        res.status(200).json({ message: 'User logged in successfully', token: token });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
     }

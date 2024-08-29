@@ -2,6 +2,9 @@ import express from 'express';
 import mongoose from 'mongoose';
 import userRoutes from './src/routes/userRoutes';
 import chatRoutes from './src/routes/chatRoutes';
+import dotenv from 'dotenv';
+dotenv.config();
+
 const app = express();
 
 // Middleware
