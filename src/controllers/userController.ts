@@ -44,3 +44,22 @@ export const loginUser = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error logging in', error });
     }
 };
+
+export const searchUsers = async (req: Request, res: Response) => {
+    try {
+        const { query }= req.body;
+
+        if (typeof query !== 'string' || query.trim() === '') {
+            return res.status(400).json({ message: 'Invalid search query' });
+        }
+
+        const users = await User.find({
+            username: { $regex: query, $options: 'i' }
+        }).select('username'); 
+
+        res.status(200).json({ users });
+    } catch (error) {
+        console.error('Error searching users:', error); // Log error details
+        res.status(500).json({ message: 'Error searching users', error });
+    }
+};
