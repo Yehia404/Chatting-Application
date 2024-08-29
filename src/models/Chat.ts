@@ -5,6 +5,7 @@ interface IMessage {
     sender: mongoose.Schema.Types.ObjectId;
     content: string;
     timestamp: Date;
+    seen: boolean;
 }
 
 interface IChat extends Document {
@@ -15,7 +16,8 @@ interface IChat extends Document {
 const messageSchema: Schema<IMessage> = new Schema({
     sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     content: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now }
+    timestamp: { type: Date, default: Date.now },
+    seen: { type: Boolean, default: false }
 });
 
 const chatSchema: Schema<IChat> = new Schema({
