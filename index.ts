@@ -7,8 +7,7 @@ dotenv.config();
 
 const app = express();
 
-// Middleware
-app.use(express.json()); // For parsing application/json
+app.use(express.json());
 
 // MongoDB connection
 const mongoURI = 'mongodb://localhost:27017/Jatdev';

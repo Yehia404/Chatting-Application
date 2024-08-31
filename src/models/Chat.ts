@@ -15,13 +15,22 @@ interface IChat extends Document {
 
 const messageSchema: Schema<IMessage> = new Schema({
     sender: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    content: { type: String, required: true },
+    content: { type: String, required: true , trim: true, minlength: 1},
     timestamp: { type: Date, default: Date.now },
     seen: { type: Boolean, default: false }
 });
 
 const chatSchema: Schema<IChat> = new Schema({
-    participants: [{ type: Schema.Types.ObjectId, ref: 'User', required: true }],
+    participants: [{ 
+        type: Schema.Types.ObjectId, 
+        ref: 'User', 
+        required: true, 
+        validate: {
+            validator: function(v: mongoose.Schema.Types.ObjectId[]) {
+                return v.length == 2;
+        },
+        message: 'A chat must have two participants.'
+    }}],
     messages: [messageSchema]
 });
 

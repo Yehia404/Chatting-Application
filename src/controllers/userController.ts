@@ -18,7 +18,8 @@ export const registerUser = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Invalid lastname' });
         }
 
-        if (typeof username !== 'string' || validator.isEmpty(username) || !validator.isAlphanumeric(username) || username.length < 2) {
+        const isValidUsername = /^[a-zA-Z0-9_\s]+$/.test(username);
+        if (typeof username !== 'string' || validator.isEmpty(username) || !isValidUsername || username.length < 2) {
             return res.status(400).json({ message: 'Invalid username' });
         }
 
