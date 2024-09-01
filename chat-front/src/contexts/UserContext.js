@@ -18,8 +18,6 @@ export const UserProvider = ({ children }) => {
 
   const loginUser = async (email, password) => {
     try {
-      console.log(email);
-      console.log(password);
       const response = await axios.post(
         "http://localhost:5000/api/users/login",
         {

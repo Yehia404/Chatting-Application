@@ -6,27 +6,7 @@ import UserDropdown from "../components/UserDropdown";
 import delivered from "../assets/delivered.png";
 import seen from "../assets/seen.png";
 import { useUserContext } from "../contexts/UserContext";
-
-const users = [
-  {
-    id: 1,
-    name: "Ahmed Amr",
-    online: true,
-    connectivity: "Online",
-  },
-  {
-    id: 2,
-    name: "Yehia Sakr",
-    online: true,
-    connectivity: "Online",
-  },
-  {
-    id: 3,
-    name: "Youssef Ahmed",
-    online: false,
-    connectivity: "Online 1 day ago",
-  },
-];
+import axios from "axios";
 
 const dummyMessages = {
   1: [
@@ -47,10 +27,11 @@ const Chat = () => {
   const [message, setMessage] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [users, setUsers] = useState([]);
   const messagesEndRef = useRef(null);
   const messagesContainerRef = useRef(null);
 
-  const { loggedInUser } = useUserContext();
+  const { loggedInUser, authToken } = useUserContext();
 
   const handleUserClick = (userId) => {
     setSelectedUserId(userId);
@@ -101,11 +82,37 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  useEffect(() => {
+    if (searchQuery.trim() !== "") {
+      searchUsers(searchQuery);
+    } else {
+      setUsers([]); // Stored Chats Later
+    }
+  }, [searchQuery]);
 
-  const selectedUser = users.find((user) => user.id === selectedUserId);
+  const searchUsers = async (query) => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/users/search",
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+
+          params: {
+            query: query,
+          },
+        }
+      );
+      const users = response.data.users;
+      console.log(users);
+      setUsers(users);
+    } catch (error) {
+      console.error("Failed to search users", error);
+    }
+  };
+
+  const selectedUser = users.find((user) => user._id === selectedUserId);
 
   return (
     <div className="flex flex-col h-screen">
@@ -128,13 +135,13 @@ const Chat = () => {
             />
           </div>
           <ul className="space-y-4">
-            {filteredUsers.map((user) => (
+            {users.map((user) => (
               <li
-                key={user.id}
+                key={user._id}
                 className={`flex items-center gap-x-2 ${
-                  selectedUserId === user.id ? "bg-gray-300" : ""
+                  selectedUserId === user._id ? "bg-gray-300" : ""
                 } cursor-pointer rounded-md p-2`}
-                onClick={() => handleUserClick(user.id)}
+                onClick={() => handleUserClick(user._id)}
               >
                 <div className="relative inline-block">
                   <CgProfile className="w-7 h-7" />
@@ -142,7 +149,7 @@ const Chat = () => {
                     <span className="absolute -top-1 right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></span>
                   )}
                 </div>
-                <span className="text-lg">{user.name}</span>
+                <span className="text-lg">{user.username}</span>
               </li>
             ))}
           </ul>

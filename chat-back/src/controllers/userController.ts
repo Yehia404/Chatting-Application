@@ -80,15 +80,24 @@ export const loginUser = async (req: Request, res: Response) => {
 
 export const searchUsers = async (req: Request, res: Response) => {
     try {
-        const { query }= req.body;
+        const token = req.headers.authorization?.split(' ')[1];
+        const { query } = req.query;
+
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret) as { userId: string };
+        const userId = decoded.userId;
 
         if (typeof query !== 'string' || query.trim() === '') {
             return res.status(400).json({ message: 'Invalid search query' });
         }
 
         const users = await User.find({
-            username: { $regex: query, $options: 'i' }
-        }).select('username'); 
+            username: { $regex: query, $options: 'i' },
+            _id: { $ne: userId }
+        }).select('username online'); 
 
         res.status(200).json({ users });
     } catch (error) {
@@ -104,7 +113,7 @@ export const getUserInfo = async (req: Request, res: Response) => {
         }
 
         const decoded = jwt.verify(token, jwtSecret) as { userId: string };
-        const user = await User.findById(decoded.userId).select('firstname lastname username email');
+        const user = await User.findById(decoded.userId).select('firstname lastname username email online');
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
