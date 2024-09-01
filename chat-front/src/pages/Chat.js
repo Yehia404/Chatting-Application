@@ -24,6 +24,7 @@ const dummyMessages = {
 const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [chatId, setChatId] = useState(null);
   const [message, setMessage] = useState("");
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,11 +35,33 @@ const Chat = () => {
   const { loggedInUser, authToken } = useUserContext();
 
   const handleUserClick = (userId) => {
+    setMessages([]);
     setSelectedUserId(userId);
-    setMessages(dummyMessages[userId] || []);
+    handleGetMessages(userId);
     setShowScrollButton(false);
   };
-
+  // Messages Logic
+  const handleGetMessages = async (userId) => {
+    try {
+      console.log(userId);
+      const response = await axios.get(
+        "http://localhost:5000/api/chats/getmsg",
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+          params: {
+            userId,
+          },
+        }
+      );
+      setChatId(response.data.chatId);
+      const messages = response.data.messages;
+      setMessages(messages || []);
+    } catch (error) {
+      console.error("Failed to get messages", error);
+    }
+  };
   const handleSendMessage = () => {
     if (message.trim() === "" || selectedUserId === null) return;
 
@@ -59,6 +82,7 @@ const Chat = () => {
     ];
   };
 
+  // Scrolling Logic
   const handleScroll = () => {
     if (!messagesContainerRef.current) return;
 
@@ -82,6 +106,7 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
+  // Search Users
   useEffect(() => {
     if (searchQuery.trim() !== "") {
       searchUsers(searchQuery);
@@ -100,7 +125,7 @@ const Chat = () => {
           },
 
           params: {
-            query: query,
+            query,
           },
         }
       );
@@ -113,6 +138,16 @@ const Chat = () => {
   };
 
   const selectedUser = users.find((user) => user._id === selectedUserId);
+
+  const formatTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const options = {
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true, // Use 12-hour clock
+    };
+    return date.toLocaleTimeString([], options);
+  };
 
   return (
     <div className="flex flex-col h-screen">
@@ -168,7 +203,7 @@ const Chat = () => {
                 </div>
                 <div className="flex flex-col">
                   <span className="text-xl font-semibold">
-                    {selectedUser.name}
+                    {selectedUser.username}
                   </span>
                   <p className="text-sm text-gray-500">
                     {selectedUser.connectivity}
@@ -185,30 +220,32 @@ const Chat = () => {
                     <div
                       key={index}
                       className={`message flex mb-2 items-center ${
-                        msg.sender === "Me" ? "justify-end" : "justify-start"
+                        msg.sender.username === loggedInUser.username
+                          ? "justify-end"
+                          : "justify-start"
                       }`}
                     >
-                      {msg.sender !== "Me" && (
+                      {msg.sender.username !== loggedInUser.username && (
                         <CgProfile className="w-10 h-10 mr-2 flex-shrink-0" />
                       )}
                       <div className="flex flex-col">
                         <div
                           className={`p-3 rounded-xl max-w-xs md:max-w-md lg:max-w-lg break-words ${
-                            msg.sender === "Me"
+                            msg.sender.username === loggedInUser.username
                               ? "bg-cblue text-tcolor rounded-br-none"
                               : "bg-cgrey text-tcolor rounded-bl-none"
                           }`}
                         >
-                          {msg.text}
+                          {msg.content}
                         </div>
                         <div
                           className={`text-sm text-gray-500 mt-1 flex items-center ${
-                            msg.sender === "Me"
+                            msg.sender.username === loggedInUser.username
                               ? "justify-end"
                               : "justify-start"
                           }`}
                         >
-                          {msg.sender === "Me" && (
+                          {msg.sender.username === loggedInUser.username && (
                             <img
                               src={msg.seen ? seen : delivered}
                               alt={msg.seen ? "seen" : "delivered"}
@@ -216,7 +253,9 @@ const Chat = () => {
                             />
                           )}
 
-                          <span className="text-sm ml-2">{msg.time}</span>
+                          <span className="text-sm ml-2">
+                            {formatTime(msg.timestamp)}
+                          </span>
                         </div>
                       </div>
                     </div>

@@ -25,12 +25,7 @@ const chatSchema: Schema<IChat> = new Schema({
         type: Schema.Types.ObjectId, 
         ref: 'User', 
         required: true, 
-        validate: {
-            validator: function(v: mongoose.Schema.Types.ObjectId[]) {
-                return v.length == 2;
-        },
-        message: 'A chat must have two participants.'
-    }}],
+    }],
     messages: [messageSchema]
 });
 
