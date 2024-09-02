@@ -176,7 +176,7 @@ const Chat = () => {
     const options = {
       hour: "2-digit",
       minute: "2-digit",
-      hour12: true, // Use 12-hour clock
+      hour12: true,
     };
     return date.toLocaleTimeString([], options);
   };

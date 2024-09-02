@@ -8,11 +8,15 @@ export const useUserContext = () => useContext(UserContext);
 export const UserProvider = ({ children }) => {
   const [authToken, setAuthToken] = useState(null);
   const [loggedInUser, setLoggedInUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) {
       setAuthToken(token);
+      fetchUserInfo(token).finally(() => setLoading(false));
+    } else {
+      setLoading(false);
     }
   }, []);
 
@@ -66,7 +70,7 @@ export const UserProvider = ({ children }) => {
     <UserContext.Provider
       value={{ loggedInUser, authToken, loginUser, logoutUser }}
     >
-      {children}
+      {loading ? <div>Loading...</div> : children}
     </UserContext.Provider>
   );
 };
