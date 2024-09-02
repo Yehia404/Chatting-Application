@@ -36,7 +36,7 @@ export const createChat = async (req: Request, res: Response) => {
         const newChat = new Chat({ participants, messages: [] });
         await newChat.save();
 
-        res.status(201).json({ message: 'Chat created successfully'});
+        res.status(201).json({ message: 'Chat created successfully', chat : newChat });
 
     } catch (err) {
         res.status(500).json({ message: 'Error creating chat', err });

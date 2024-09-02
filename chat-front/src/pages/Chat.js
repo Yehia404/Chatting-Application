@@ -35,7 +35,6 @@ const Chat = () => {
   // Socket.IO Event Handlers
   useEffect(() => {
     socket.on("receiveMessage", (newMessage) => {
-      console.log(newMessage);
       setMessages((prevMessages) => [...prevMessages, newMessage]);
     });
 
@@ -75,19 +74,45 @@ const Chat = () => {
     }
   };
 
-  const handleSendMessage = () => {
+  const handleSendMessage = async () => {
     if (message.trim() === "" || selectedUserId === null) return;
 
-    const newMessage = {
-      chatId,
-      senderId: loggedInUser._id,
-      content: message.trim(),
-    };
+    try {
+      let currentChatId = chatId;
 
-    // Emit message to the server
-    socket.emit("sendMessage", newMessage);
+      if (!currentChatId) {
+        console.log("Creating new chat");
+        const response = await axios.post(
+          "http://localhost:5000/api/chats/create",
+          {
+            participants: [loggedInUser._id, selectedUserId],
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          }
+        );
+        console.log(response.data.chat);
+        currentChatId = response.data.chat._id;
+        setChatId(currentChatId);
+        setChats((prevChats) => [...prevChats, response.data.chat]);
+      }
 
-    setMessage("");
+      const newMessage = {
+        chatId: currentChatId,
+        senderId: loggedInUser._id,
+        content: message.trim(),
+      };
+
+      socket.emit("sendMessage", newMessage);
+      handleGetMessages(selectedUserId);
+      setMessage("");
+
+      //Update Chat List so that the user name appears
+    } catch (error) {
+      console.error("Failed to send message", error);
+    }
   };
 
   // Scrolling Logic
