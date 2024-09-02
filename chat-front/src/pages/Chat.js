@@ -7,19 +7,9 @@ import delivered from "../assets/delivered.png";
 import seen from "../assets/seen.png";
 import { useUserContext } from "../contexts/UserContext";
 import axios from "axios";
+import io from "socket.io-client";
 
-const dummyMessages = {
-  1: [
-    { sender: "Ahmed", text: "Hi there!", time: "12:00 PM" },
-    { sender: "Ahmed", text: "Did you hear what happened?", time: "12:00 PM" },
-    { sender: "Me", text: "Hello Ahmed!", time: "12:01 PM", seen: true },
-  ],
-  2: [
-    { sender: "Yehia", text: "Hey, what's up?", time: "01:00 AM" },
-    { sender: "Me", text: "Not much, you?", time: "01:15 AM", seen: false },
-  ],
-  3: [],
-};
+const socket = io("http://localhost:5000");
 
 const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
@@ -41,6 +31,26 @@ const Chat = () => {
     handleGetMessages(userId);
     setShowScrollButton(false);
   };
+
+  // Socket.IO Event Handlers
+  useEffect(() => {
+    socket.on("receiveMessage", (newMessage) => {
+      console.log(newMessage);
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+    });
+
+    return () => {
+      socket.off("receiveMessage");
+    };
+  }, []);
+
+  // Joining Chat Room
+  useEffect(() => {
+    if (selectedUserId && chatId) {
+      socket.emit("joinChat", chatId);
+    }
+  }, [selectedUserId, chatId]);
+
   // Messages Logic
   const handleGetMessages = async (userId) => {
     try {
@@ -58,29 +68,26 @@ const Chat = () => {
       );
       setChatId(response.data.chatId);
       const messages = response.data.messages;
+      console.log(messages);
       setMessages(messages || []);
     } catch (error) {
       console.error("Failed to get messages", error);
     }
   };
+
   const handleSendMessage = () => {
     if (message.trim() === "" || selectedUserId === null) return;
 
     const newMessage = {
-      sender: "Me",
-      text: message.trim(),
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
+      chatId,
+      senderId: loggedInUser._id,
+      content: message.trim(),
     };
-    setMessages((prevMessages) => [...prevMessages, newMessage]);
-    setMessage("");
 
-    dummyMessages[selectedUserId] = [
-      ...(dummyMessages[selectedUserId] || []),
-      newMessage,
-    ];
+    // Emit message to the server
+    socket.emit("sendMessage", newMessage);
+
+    setMessage("");
   };
 
   // Scrolling Logic
@@ -140,7 +147,6 @@ const Chat = () => {
         }
       );
       const users = response.data.users;
-      console.log(users);
       setUsers(users);
     } catch (error) {
       console.error("Failed to search users", error);
@@ -161,7 +167,6 @@ const Chat = () => {
       );
       const chats = response.data.chats;
       setChats(chats);
-      console.log(chats);
     } catch (error) {
       console.error("Failed to get chats", error);
     }
@@ -252,18 +257,18 @@ const Chat = () => {
                     <div
                       key={index}
                       className={`message flex mb-2 items-center ${
-                        msg.sender.username === loggedInUser.username
+                        msg.sender === loggedInUser._id
                           ? "justify-end"
                           : "justify-start"
                       }`}
                     >
-                      {msg.sender.username !== loggedInUser.username && (
+                      {msg.sender !== loggedInUser._id && (
                         <CgProfile className="w-10 h-10 mr-2 flex-shrink-0" />
                       )}
                       <div className="flex flex-col">
                         <div
                           className={`p-3 rounded-xl max-w-xs md:max-w-md lg:max-w-lg break-words ${
-                            msg.sender.username === loggedInUser.username
+                            msg.sender === loggedInUser._id
                               ? "bg-cblue text-tcolor rounded-br-none"
                               : "bg-cgrey text-tcolor rounded-bl-none"
                           }`}
@@ -272,12 +277,12 @@ const Chat = () => {
                         </div>
                         <div
                           className={`text-sm text-gray-500 mt-1 flex items-center ${
-                            msg.sender.username === loggedInUser.username
+                            msg.sender === loggedInUser._id
                               ? "justify-end"
                               : "justify-start"
                           }`}
                         >
-                          {msg.sender.username === loggedInUser.username && (
+                          {msg.sender === loggedInUser._id && (
                             <img
                               src={msg.seen ? seen : delivered}
                               alt={msg.seen ? "seen" : "delivered"}

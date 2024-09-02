@@ -101,7 +101,7 @@ export const getMessages = async (req: Request, res: Response) => {
 
         const chat = await Chat.findOne({
             participants: { $all: [myId, userId] }
-        }).populate('messages.sender', 'username');
+        })
 
         if (!chat) {
             return res.status(404).json({ message: 'Chat not found' });

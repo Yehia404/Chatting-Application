@@ -45,7 +45,6 @@ const Login = () => {
 
     try {
       const token = await loginUser(email, password);
-      console.log(token);
       if (token) {
         navigate("/chat");
       } else {
