@@ -24,8 +24,9 @@ const dummyMessages = {
 const Chat = () => {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [messages, setMessages] = useState([]);
-  const [chatId, setChatId] = useState(null);
+  const [chatId, setChatId] = useState(null); // For Messaging
   const [message, setMessage] = useState("");
+  const [chats, setChats] = useState([]);
   const [showScrollButton, setShowScrollButton] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [users, setUsers] = useState([]);
@@ -45,7 +46,7 @@ const Chat = () => {
     try {
       console.log(userId);
       const response = await axios.get(
-        "http://localhost:5000/api/chats/getmsg",
+        "http://localhost:5000/api/chats/getmsgs",
         {
           headers: {
             Authorization: `Bearer ${authToken}`,
@@ -106,14 +107,23 @@ const Chat = () => {
     scrollToBottom();
   }, [messages]);
 
-  // Search Users
+  // Search Users and Get Chats
   useEffect(() => {
     if (searchQuery.trim() !== "") {
       searchUsers(searchQuery);
     } else {
-      setUsers([]); // Stored Chats Later
+      if (chats.length > 0) {
+        const chatUsers = chats.map((chat) => {
+          return chat.participants.find(
+            (user) => user._id !== loggedInUser._id
+          );
+        });
+        setUsers(chatUsers);
+      } else {
+        setUsers([]);
+      }
     }
-  }, [searchQuery]);
+  }, [searchQuery, chats]);
 
   const searchUsers = async (query) => {
     try {
@@ -138,6 +148,28 @@ const Chat = () => {
   };
 
   const selectedUser = users.find((user) => user._id === selectedUserId);
+
+  const getChats = async () => {
+    try {
+      const response = await axios.get(
+        "http://localhost:5000/api/chats/getchats",
+        {
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+          },
+        }
+      );
+      const chats = response.data.chats;
+      setChats(chats);
+      console.log(chats);
+    } catch (error) {
+      console.error("Failed to get chats", error);
+    }
+  };
+
+  useEffect(() => {
+    getChats();
+  }, []);
 
   const formatTime = (timestamp) => {
     const date = new Date(timestamp);

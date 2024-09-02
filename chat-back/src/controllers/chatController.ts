@@ -112,3 +112,20 @@ export const getMessages = async (req: Request, res: Response) => {
         res.status(500).json({ message: 'Error getting messages', error });
     }
 };
+
+export const getChats = async (req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret) as { userId: string };
+        const myId = decoded.userId;
+
+        const chats = await Chat.find({ participants: myId }).populate('participants', 'username');
+        res.status(200).json({ chats });
+    } catch (error) {
+        res.status(500).json({ message: 'Error getting chats', error });
+    }
+};
