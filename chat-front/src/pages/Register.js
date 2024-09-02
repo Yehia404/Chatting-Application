@@ -91,7 +91,7 @@ const Register = () => {
     passwordError,
   ]);
 
-  const { addUser } = useUserContext();
+  const { registerUser } = useUserContext();
   const navigate = useNavigate();
 
   const handleRegister = (e) => {
@@ -100,12 +100,12 @@ const Register = () => {
     const newUser = {
       firstname,
       lastname,
-      email,
+      email: email.toLowerCase(),
       username,
       password,
     };
 
-    addUser(newUser);
+    registerUser(newUser);
     navigate("/login");
   };
 

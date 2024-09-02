@@ -25,7 +25,7 @@ export const UserProvider = ({ children }) => {
       const response = await axios.post(
         "http://localhost:5000/api/users/login",
         {
-          email,
+          email: email.toLowerCase(),
           password,
         }
       );
@@ -60,6 +60,14 @@ export const UserProvider = ({ children }) => {
     }
   };
 
+  const registerUser = async (user) => {
+    try {
+      await axios.post("http://localhost:5000/api/users/register", user);
+    } catch (error) {
+      console.error("Registration failed", error);
+    }
+  };
+
   const logoutUser = () => {
     setLoggedInUser(null);
     setAuthToken(null);
@@ -68,7 +76,7 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider
-      value={{ loggedInUser, authToken, loginUser, logoutUser }}
+      value={{ loggedInUser, authToken, loginUser, registerUser, logoutUser }}
     >
       {loading ? <div>Loading...</div> : children}
     </UserContext.Provider>
