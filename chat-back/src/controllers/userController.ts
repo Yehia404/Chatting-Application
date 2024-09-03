@@ -70,11 +70,35 @@ export const loginUser = async (req: Request, res: Response) => {
             return res.status(400).json({ message: 'Invalid credentials' });
         }
 
+        user.online = true;
+        await user.save();
         const token = jwt.sign({ userId: user._id }, jwtSecret, { expiresIn: '1h' });
 
         res.status(200).json({ message: 'User logged in successfully', token: token });
     } catch (error) {
         res.status(500).json({ message: 'Error logging in', error });
+    }
+};
+
+export const logoutUser = async (req: Request, res: Response) => {
+    try {
+        const token = req.headers.authorization?.split(' ')[1];
+        if (!token) {
+            return res.status(401).json({ message: 'Unauthorized' });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret) as { userId: string };
+        const user = await User.findById(decoded.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        user.online = false;
+        await user.save();
+
+        res.status(200).json({ message: 'User logged out successfully' });
+    } catch (error) {
+        res.status(500).json({ message: 'Error logging out', error });
     }
 };
 

@@ -54,6 +54,7 @@ export const UserProvider = ({ children }) => {
         }
       );
       const user = response.data.user;
+      console.log(user);
       setLoggedInUser(user);
     } catch (error) {
       console.error("Failed to fetch user info", error);
@@ -68,10 +69,24 @@ export const UserProvider = ({ children }) => {
     }
   };
 
-  const logoutUser = () => {
-    setLoggedInUser(null);
-    setAuthToken(null);
-    localStorage.removeItem("authToken");
+  const logoutUser = async () => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/users/logout",
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("authToken")}`,
+          },
+        }
+      );
+
+      setLoggedInUser(null);
+      setAuthToken(null);
+      localStorage.removeItem("authToken");
+    } catch (error) {
+      console.error("Logout failed", error);
+    }
   };
 
   return (

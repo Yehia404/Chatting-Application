@@ -153,6 +153,7 @@ const Chat = () => {
             (user) => user._id !== loggedInUser._id
           );
         });
+        console.log(chatUsers);
         setUsers(chatUsers);
       } else {
         setUsers([]);
@@ -175,6 +176,7 @@ const Chat = () => {
         }
       );
       const users = response.data.users;
+      console.log(users);
       setUsers(users);
     } catch (error) {
       console.error("Failed to search users", error);

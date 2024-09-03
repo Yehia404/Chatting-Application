@@ -123,7 +123,7 @@ export const getChats = async (req: Request, res: Response) => {
         const decoded = jwt.verify(token, jwtSecret) as { userId: string };
         const myId = decoded.userId;
 
-        const chats = await Chat.find({ participants: myId }).populate('participants', 'username');
+        const chats = await Chat.find({ participants: myId }).populate('participants', 'username online');
         res.status(200).json({ chats });
     } catch (error) {
         res.status(500).json({ message: 'Error getting chats', error });
