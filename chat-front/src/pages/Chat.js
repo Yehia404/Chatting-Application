@@ -53,7 +53,6 @@ const Chat = () => {
   // Messages Logic
   const handleGetMessages = async (userId) => {
     try {
-      console.log(userId);
       const response = await axios.get(
         "http://localhost:5000/api/chats/getmsgs",
         {
@@ -67,7 +66,6 @@ const Chat = () => {
       );
       setChatId(response.data.chatId);
       const messages = response.data.messages;
-      console.log(messages);
       setMessages(messages || []);
     } catch (error) {
       console.error("Failed to get messages", error);
@@ -79,9 +77,9 @@ const Chat = () => {
 
     try {
       let currentChatId = chatId;
+      let newChat = null;
 
       if (!currentChatId) {
-        console.log("Creating new chat");
         const response = await axios.post(
           "http://localhost:5000/api/chats/create",
           {
@@ -93,23 +91,28 @@ const Chat = () => {
             },
           }
         );
-        console.log(response.data.chat);
-        currentChatId = response.data.chat._id;
+        newChat = response.data.chat;
+        currentChatId = newChat._id;
         setChatId(currentChatId);
-        setChats((prevChats) => [...prevChats, response.data.chat]);
       }
 
       const newMessage = {
         chatId: currentChatId,
-        senderId: loggedInUser._id,
+        sender: loggedInUser._id,
         content: message.trim(),
+        timestamp: new Date(),
       };
 
       socket.emit("sendMessage", newMessage);
-      handleGetMessages(selectedUserId);
-      setMessage("");
 
-      //Update Chat List so that the user name appears
+      if (newChat) {
+        if (selectedUser) {
+          newChat.participants = [loggedInUser, selectedUser];
+        }
+        setChats((prevChats) => [...prevChats, newChat]);
+      }
+      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      setMessage("");
     } catch (error) {
       console.error("Failed to send message", error);
     }

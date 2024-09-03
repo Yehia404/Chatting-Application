@@ -48,12 +48,12 @@ io.on('connection', (socket) => {
 
     socket.on('sendMessage', async (messageData) => {
         try {
-            const { chatId, senderId, content } = messageData;
+            const { chatId, sender, content, timestamp } = messageData;
 
             const newMessage = {
-                sender: senderId,
+                sender,
                 content,
-                timestamp: new Date(),
+                timestamp,
                 seen: false,
             };
 
