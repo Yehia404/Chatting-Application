@@ -111,7 +111,7 @@ const Chat = () => {
         }
         setChats((prevChats) => [...prevChats, newChat]);
       }
-      setMessages((prevMessages) => [...prevMessages, newMessage]);
+      // setMessages((prevMessages) => [...prevMessages, newMessage]);
       setMessage("");
     } catch (error) {
       console.error("Failed to send message", error);
