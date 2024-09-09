@@ -22,7 +22,7 @@ app.use(express.json());
 app.use(cors());
 
 // MongoDB connection
-const mongoURI = 'mongodb://localhost:27017/Jatdev';
+const mongoURI = process.env.MONGO_URI as string;
 mongoose.connect(mongoURI, {})
     .then(() => {
         console.log('MongoDB connected');

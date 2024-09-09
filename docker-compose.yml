@@ -1,0 +1,36 @@
+
+services:
+  backend:
+    build: ./chat-back
+    ports:
+      - "5000:5000"
+    env_file:
+      - ./chat-back/.env
+    depends_on:
+      - mongo
+    networks:
+      - chatnet
+
+  frontend:
+    build: ./chat-front
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - chatnet
+
+  mongo:
+    image: mongo:latest
+    ports:
+      - "27017:27017"
+    networks:
+      - chatnet
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  chatnet:
+
+volumes:
+  mongo-data:
